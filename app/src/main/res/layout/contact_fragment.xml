@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
         android:gravity="center_horizontal"
-        android:text="Номер, для которого хотите посмотреть контакт"
+        android:text="@string/contact_hint"
         android:textSize="24sp" />
 
     <EditText
@@ -22,14 +22,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
         android:layout_marginHorizontal="68dp"
-        android:hint="Введите номер" />
+        android:hint="@string/contact_number_hint" />
 
     <Button
         android:id="@+id/contact_find"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Искать"
+        android:text="@string/contact_button_find"
         android:layout_gravity="center_horizontal"
 />
     <FrameLayout

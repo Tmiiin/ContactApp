@@ -15,9 +15,4 @@ class NotFoundContactFragment(): Fragment() {
     ): View? {
         return inflater.inflate(R.layout.contact_not_found, container, false)
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        super.onViewCreated(view, savedInstanceState)
-    }
 }

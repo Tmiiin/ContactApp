@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CFT1stProject</string>
+    <string name="contact_name">Имя контакта:</string>
+    <string name="contact_hint">Номер, для которого хотите посмотреть контакт</string>
+    <string name="contact_number_hint">Введите номер</string>
+    <string name="contact_button_find">Искать</string>
 </resources>

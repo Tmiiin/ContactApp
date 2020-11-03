@@ -11,17 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
-
+import kotlinx.android.synthetic.main.contact_fragment.*
 
 class ContactFragment(private val mContext: Context) : Fragment() {
-
-    lateinit var contactContainer: FrameLayout
-    lateinit var contactEditNumber: EditText
-    lateinit var findButton: Button
 
     companion object {
         fun newInstance(mContext: Context) = ContactFragment(mContext)
@@ -36,62 +29,65 @@ class ContactFragment(private val mContext: Context) : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        findButton.setOnClickListener { findContact() }
+        contact_find.setOnClickListener { findContact() }
     }
 
     private fun findContact() {
-        var name: String? = getContactDisplayNameByNumber(contactEditNumber.text.toString())
-        val imm =
-            mContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view!!.windowToken, 0)
-        if (!name.isNullOrEmpty()) {
+        val input = contact_input_number.text.toString()
+        val contactView: ContactView = getContactInfoByNumber(input)
+        hideKeyboard()
+        if (!contactView.isNullOrEmpty()) {
+            contact_input_number.editableText.clear()
+            
             childFragmentManager.beginTransaction().replace(
                 R.id.contact_container,
-                FoundContactFragment(name, contactEditNumber.text.toString())
+                FoundContactFragment(contactView, input)
             )
                 .commit()
         } else {
-            contactEditNumber.editableText.clear()
             childFragmentManager.beginTransaction().replace(
                 R.id.contact_container,
                 NotFoundContactFragment()
             )
-
+                .commit()
         }
     }
 
-    private fun getContactDisplayNameByNumber(number: String?): String? {
+    private fun hideKeyboard() {
+        val imm =
+            mContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view!!.windowToken, 0)
+    }
 
+    private fun getContactInfoByNumber(number: String?): ContactView {
         val uri: Uri = Uri.withAppendedPath(
             ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
             Uri.encode(number)
         )
-        var name = "?"
+        var name = ""
+        var image = "?"
+        var finedNumber = "?"
         val contentResolver: ContentResolver = mContext.contentResolver
         val contactLookup = contentResolver.query(
             uri, arrayOf(
                 BaseColumns._ID,
-                ContactsContract.PhoneLookup.DISPLAY_NAME
+                ContactsContract.PhoneLookup.DISPLAY_NAME,
+                ContactsContract.PhoneLookup.PHOTO_URI,
+                ContactsContract.PhoneLookup.NUMBER
             ), null, null, null
         )
-        try {
+        contactLookup.use { contactLookup ->
             if (contactLookup != null && contactLookup.count > 0) {
                 contactLookup.moveToNext()
                 name =
                     contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
-                //String contactId = contactLookup.getString(contactLookup.getColumnIndex(BaseColumns._ID));
+                image =
+                    contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.PHOTO_URI))
+                finedNumber =
+                    contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.PhoneLookup.NUMBER))
             }
-        } finally {
-            contactLookup?.close()
         }
-        return name
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        contactEditNumber = view.findViewById(R.id.contact_input_number)
-        contactContainer = view.findViewById(R.id.contact_container)
-        findButton = view.findViewById(R.id.contact_find)
-        super.onViewCreated(view, savedInstanceState)
+        return ContactView(name, image, finedNumber)
     }
 
 }
