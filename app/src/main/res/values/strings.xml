@@ -4,4 +4,7 @@
     <string name="contact_hint">Номер, для которого хотите посмотреть контакт</string>
     <string name="contact_number_hint">Введите номер</string>
     <string name="contact_button_find">Искать</string>
+    <string name="downloadToImgur"><u>Загрузить изображение на imgur</u></string>
+    <string name="description">Подпись</string>
+    <string name="title">Описание</string>
 </resources>

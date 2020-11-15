@@ -1,4 +1,4 @@
-package com.example.cft1stproject
+package com.example.cft1stproject.model
 
 data class ContactView(
     val name: String,

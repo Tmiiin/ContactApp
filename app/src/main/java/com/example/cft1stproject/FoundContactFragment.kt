@@ -2,16 +2,16 @@ package com.example.cft1stproject
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.cft1stproject.model.ContactView
 import kotlinx.android.synthetic.main.contact_found_layout.*
-import java.net.URI
+import java.lang.Exception
 
-class FoundContactFragment(private val contactView: ContactView, var number: String): Fragment(){
+class FoundContactFragment(private val contactView: ContactView) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,4 +28,6 @@ class FoundContactFragment(private val contactView: ContactView, var number: Str
         contact_number.text = contactView.number
         super.onViewCreated(view, savedInstanceState)
     }
+
+
 }

@@ -7,14 +7,22 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import com.example.cft1stproject.model.ContactView
+import com.example.cft1stproject.retrofit.ImgurAPI
 import kotlinx.android.synthetic.main.contact_fragment.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class ContactFragment(private val mContext: Context) : Fragment() {
+
+class ContactFragment(private val mContext: Context) : Fragment(), OnBackPressedListener {
+
+    lateinit var contactView: ContactView
 
     companion object {
         fun newInstance(mContext: Context) = ContactFragment(mContext)
@@ -30,21 +38,33 @@ class ContactFragment(private val mContext: Context) : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         contact_find.setOnClickListener { findContact() }
+        download_to_imgur.setOnClickListener {
+            replaceToDownloadFragment(contactView)
+        }
+    }
+
+    fun replaceToDownloadFragment(contactView: ContactView) {
+        childFragmentManager.beginTransaction().replace(
+            R.id.contact_container, DownloadFragment( mContext, contactView)
+        )
+            .addToBackStack("DownloadFragment")
+            .commit()
     }
 
     private fun findContact() {
         val input = contact_input_number.text.toString()
-        val contactView: ContactView = getContactInfoByNumber(input)
+        contactView = getContactInfoByNumber(input)
         hideKeyboard()
         if (!contactView.isNullOrEmpty()) {
             contact_input_number.editableText.clear()
-            
+            download_to_imgur.visibility = View.VISIBLE
             childFragmentManager.beginTransaction().replace(
                 R.id.contact_container,
-                FoundContactFragment(contactView, input)
+                FoundContactFragment(contactView)
             )
                 .commit()
         } else {
+            download_to_imgur.visibility = View.GONE
             childFragmentManager.beginTransaction().replace(
                 R.id.contact_container,
                 NotFoundContactFragment()
@@ -81,13 +101,20 @@ class ContactFragment(private val mContext: Context) : Fragment() {
                 contactLookup.moveToNext()
                 name =
                     contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
-                image =
+                image = try {
                     contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.PHOTO_URI))
+                } catch (e: Exception) {
+                    "android.resource://com.example.cft1stproject/" + R.drawable.unknown_person
+                }
                 finedNumber =
                     contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.PhoneLookup.NUMBER))
             }
         }
         return ContactView(name, image, finedNumber)
+    }
+
+    override fun onBackPressed() {
+        childFragmentManager.popBackStack()
     }
 
 }
